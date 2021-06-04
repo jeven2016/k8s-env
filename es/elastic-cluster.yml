@@ -1,0 +1,110 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: es-data
+  labels:
+    name: es-data
+
+---
+
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: nfs-sc
+  namespace: es-data
+provisioner: k8s-sigs.io/nfs-subdir-external-provisioner # or choose another name, must match deployment's env PROVISIONER_NAME'
+parameters:
+  pathPattern: "${.PVC.namespace}/${.PVC.annotations.nfs.io/storage-path}" # waits for nfs.io/storage-path annotation, if not specified will accept as empty string.
+  onDelete: delete
+
+
+---
+
+apiVersion: elasticsearch.k8s.elastic.co/v1
+kind: Elasticsearch
+metadata:
+  name: es-clusters
+  namespace: es-data
+spec:
+  version: 7.12.1
+  volumeClaimDeletePolicy: DeleteOnScaledownOnly
+  nodeSets:
+
+    - name: masters
+      count: 1  #suggest 3
+      podTemplate:
+        spec:
+          containers:
+          - name: elasticsearch
+            env:
+            #- name: ES_JAVA_OPTS
+            #  value: -Xms2g -Xmx2g
+            #resources:
+              #requests:
+               # memory: 4Gi
+                #cpu: 2
+              #limits:
+                #memory: 4Gi    
+                #cpu: 2  
+      config:
+        #从 7.9 发布后，建议使用  node.roles 来定义 node 的角色, 如果master上也设置成data，需要在master node上启用nfs client
+        node.roles: ["master"]
+        node.store.allow_mmap: false
+        xpack.ml.enabled: false
+        xpack.graph.enabled: false
+        xpack.ml.enabled: false
+        xpack.monitoring.enabled: false
+        xpack.watcher.enabled: false
+        node.attr.temp: warm
+      volumeClaimTemplates: 
+      - metadata:
+          name: elasticsearch-data # the name must be this one
+        spec:
+          accessModes:
+          - ReadWriteOnce
+          resources:
+            requests:
+              storage: 10Gi
+          storageClassName: nfs-sc
+
+    - name: nodes
+      count: 1
+      config:
+        node.roles: ["data", "ingest", "transform"]
+        node.store.allow_mmap: false
+        node.attr.temp: hot
+      volumeClaimTemplates:
+      - metadata:
+          name: elasticsearch-data  # the name must be this one
+        spec:
+          accessModes:
+          - ReadWriteOnce
+          resources:
+            requests:
+              storage: 10Gi
+          storageClassName: nfs-sc
+
+  # 集群复制同步
+  #remoteClusters:
+  #- name: cluster-two
+  #  elasticsearchRef:
+  #    name: cluster-two
+  #    namespace: ns-two      
+
+
+---
+#Kibana
+
+apiVersion: kibana.k8s.elastic.co/v1
+kind: Kibana
+metadata:
+  name: es
+  namespace: es-data
+spec:
+  version: 7.12.1
+  count: 1
+  elasticsearchRef:
+    name: es-clusters
+    namespace: es-data
+
+    

@@ -1,0 +1,38 @@
+
+#已经不需要了，es cluster创建PVC 后会自动创建对应的PV 
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: nfs-pv
+  namespace: es-data
+  labels:
+    pv: nfs-pv
+spec:
+  capacity:
+    storage: 200Gi
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Recycle
+  storageClassName: nfs-pv
+  nfs:
+    path: /opt/nfs/es
+    server: 192.168.1.102  #master Node IP
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: nfs-pv-2
+  namespace: es-data
+  labels:
+    pv: nfs-pv-2
+spec:
+  capacity:
+    storage: 200Gi
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Recycle
+  storageClassName: nfs-pv-2
+  nfs:
+    path: /opt/nfs/es-node
+    server: 192.168.1.102  #master Node IP
