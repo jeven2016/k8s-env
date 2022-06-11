@@ -1,0 +1,12 @@
+version: '3'
+services:
+  nexus:
+    image: 'sonatype/nexus3'
+    container_name: nexus-npm
+    #restart: always
+    environment:
+      - TZ=Asia/Shanghai
+    network_mode: host
+    volumes:
+      # remember to chmod the nexus_dir for nexus 
+      - /home/jujucom/Desktop/backup/nexus:/nexus-data
