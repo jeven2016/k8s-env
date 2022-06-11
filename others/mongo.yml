@@ -1,0 +1,28 @@
+version: '2'
+services:
+  mongo:
+    image: mongo
+    network_mode: host
+    #    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: db_user
+      MONGO_INITDB_ROOT_PASSWORD: db_pwd
+    # volumes:
+      #      - '/root/Desktop/backup/mongodb:/data/db'
+      # - '/home/jujucom/Desktop/workspace/projects/resource-downloader/temp/mongodb:/data/db'
+   ports:
+     - '27017:27017'
+
+    #  admin-mongo:
+    #    image: mrvautin/adminmongo
+    # restart: always
+  #    ports:
+  #      - '5803:1234'
+
+#  I ran in this problem with OpenVPN working as well and I've found a solution where you should NOT stop/start OpenVPN server.
+#networks:
+#  default:
+#    driver: bridge
+#    ipam:
+#      config:
+#        - subnet: 192.168.242.0/24

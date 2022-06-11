@@ -1,0 +1,20 @@
+version: '3.9'
+
+# ❯ docker exec -it my-redis /bin/sh
+# /data # redis-cli
+# 127.0.0.1:6379> auth MDNcVb924a
+# OK
+# 127.0.0.1:6379> keys *
+# (empty array)
+# 127.0.0.1:6379>
+#
+services:
+  redis:
+    image: redis:latest
+    ports:
+      - 6379:6379
+    # The remaining commands (redis-server --save 60 1 --requirepass MDNcVb924a --loglevel warning) 
+    # defines the command to execute when the container starts. In our case, we are defining the default command 
+    # with the redis-server command passing arguments to save data every 60 seconds and specifying a password for our redis
+    #
+    command: redis-server --save 60 1 --requirepass pwd --loglevel warning
