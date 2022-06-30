@@ -2,7 +2,7 @@ version: '2'
 services:
   mongo:
     image: mongo
-    network_mode: host
+#    network_mode: host
     #    restart: always
     environment:
       MONGO_INITDB_ROOT_USERNAME: db_user
@@ -10,7 +10,7 @@ services:
     # volumes:
       #      - '/root/Desktop/backup/mongodb:/data/db'
       # - '/home/jujucom/Desktop/workspace/projects/resource-downloader/temp/mongodb:/data/db'
-   ports:
+    ports:
      - '27017:27017'
 
     #  admin-mongo:
