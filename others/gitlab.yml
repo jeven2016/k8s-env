@@ -1,0 +1,33 @@
+version: '3'
+services:
+  gitlab:
+    image: 'gitlab/gitlab-ce'
+    restart: always
+    hostname: 'gitlab.super666.cn'
+    environment:
+      TZ: 'Asia/Shanghai'
+      GITLAB_OMNIBUS_CONFIG: |
+        external_url 'http://gitlab.super666.cn:9999'
+        gitlab_rails['time_zone'] = 'Asia/Shanghai'
+        # 需要配置到 gitlab.rb 中的配置可以在这里配置，每个配置一行，注意缩进。
+        # 比如下面的电子邮件的配置：
+        # gitlab_rails['smtp_enable'] = true
+        # gitlab_rails['smtp_address'] = "smtp.qq.com"
+        # gitlab_rails['smtp_port'] = 465
+         gitlab_rails['smtp_user_name'] = "jujucom@126.com"
+         gitlab_rails['smtp_password'] = "Wzjfck2015"
+        # gitlab_rails['smtp_authentication'] = "login"
+        # gitlab_rails['smtp_enable_starttls_auto'] = true
+        # gitlab_rails['smtp_tls'] = true
+        # gitlab_rails['gitlab_email_from'] = '9579249@qq.com'
+    ports:
+      - '9999:9999'
+        #- '443:443'
+      #- '22:22'
+    volumes:
+      #将相关配置映射到当前目录下的config目录
+      - './config:/etc/gitlab'
+      #将日志映射到当前目录下的logs目录
+      - './logs:/var/log/gitlab'
+      #将数据映射到当前目录下的data目录
+      - './data:/var/opt/gitlab'
