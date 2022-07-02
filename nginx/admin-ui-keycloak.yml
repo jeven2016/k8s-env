@@ -1,0 +1,19 @@
+
+version: "3"
+
+services:
+  keycloak:
+    image: quay.io/keycloak/keycloak:18.0.0
+    restart: always
+      # ports:
+    # - 9090:8080
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      ENV KC_DB_URL: "jdbc:mysql://mysql:3306/keycloak-db?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&failOverReadOnly=false"
+      ENV KC_DB_USERNAME: root
+      ENV KC_DB_PASSWORD: root
+    depends_on:
+      - mysql-db
+    command: 'start-dev'
+    network_mode: host
