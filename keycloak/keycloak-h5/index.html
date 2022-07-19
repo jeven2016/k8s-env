@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body style="margin-top: 200px;">
+  <p onclick="loginKeycloak()">登录2</p>
+  <p onclick="logoutKeycloak()">退出</p>
+  <div id="drawer"></div>
+  <div onclick="refreshToken()">刷新令牌</div>
+  <div id="drawer2"></div>
+  <div onclick="getUserInfo()">获取用户信息</div>
+  <script src="./keycloak.js"></script>
+  <script>
+    const drawer = document.getElementById('drawer')
+    const drawer2 = document.getElementById('drawer2')
+    const p = document.createElement('p')
+    const p2 = document.createElement('p')
+    const _kc = new Keycloak('./keycloak.json')
+    _kc.init({
+      onLoad: 'check-sso',
+      pkceMethod: 'S256',
+    })
+      .then(auth => {
+        let textInner = null
+        if (auth) {
+          const {
+            tokenParsed: {exp:accessExp},
+            refreshTokenParsed: {exp:refreshExp},
+          } = _kc
+            // \n${new Date()}
+            // \n${new Date(accessExp*1000)}
+            // \n${new Date(refreshExp*1000)}
+          textInner = document.createTextNode(`已登录`)
+        } else {
+          textInner = document.createTextNode('未登录')
+        }
+        _kc.hasResourceRole()
+        p.append(textInner)
+        drawer.append(p)
+        console.log(_kc, 'kc==>')
+      })
+      .catch((error) => {
+        console.log('error===>', error)
+      })
+
+
+      
+    function loginKeycloak () {
+      _kc.login()
+    }
+
+    async function logoutKeycloak () {
+      const result = await _kc.logout()
+      console.log(result, 'log===>')
+    }
+
+    function refreshToken () {
+      _kc.updateToken(-1)
+    }
+
+    function getUserInfo() {
+      _kc.loadUserInfo()
+    }
+  </script>
+</body>
+</html>

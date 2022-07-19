@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    .boxxx {
+      width: 10%;
+      padding-bottom: 10%; 
+      height: 0;
+      background: red;
+      transition: all 3s;
+    }
+    .boxxx:hover {
+      transform: translateY(20px);
+    }
+  </style>
+</head>
+<body style="margin-top: 200px;">
+  <select id="domain">
+    <option value="Demo_01">Demo_01</option>
+  </select>
+  <p onclick="login()">登录</p>
+  <p onclick="logoutKeycloak()">退出</p>
+  <div onclick="refreshToken()">刷新令牌</div>
+  <div onclick="getUserInfo()">获取用户信息</div>
+  <div class="boxxx">123</div>
+  27272
+  <script src="./keycloak.js"></script>
+  <script src="./qs.js"></script>
+  <script>
+    let sssss= 123
+    var _kc = null
+
+    let registerKcInfo = async () => {
+      _kc = new Keycloak({
+        realm: "Demo_01",
+        url: "http://localhost:8180/",
+        clientId: "clientDemo"
+      })
+      const result = await _kc.init({
+        onLoad: 'login-required',
+        pkceMethod: 'S256',
+      })
+      localStorage.setItem('isLogged', result)
+      localStorage.setItem('token', _kc.token)
+    }
+
+    const isLogged = localStorage.getItem('isLogged')
+    const hash = window.location.hash
+    const {state, session_state, code} = Qs.parse(hash.replace(/#/, ''))
+    if (isLogged || code) {
+      Promise.all([registerKcInfo()])
+        .then(() => {
+          const {auth_time, exp} = _kc.tokenParsed
+          // console.log(new Date(auth_time*1000), 'auth_time')
+          // console.log(new Date(exp*1000), 'exp')
+        })
+    }
+
+      
+    async function login () {
+      await registerKcInfo()
+    }
+
+    async function logoutKeycloak () {
+      const result = await _kc.logout()
+      console.log(result, 'log===>')
+    }
+
+    function refreshToken () {
+      _kc.updateToken(-1)
+        .then((res) => {
+          console.log('refreshed===>', res)
+        })
+    }
+
+    function getUserInfo() {
+      _kc.loadUserInfo()
+    }
+
+    function validate() {
+      var url = 'http://localhost:8180/realms/Demo_01/protocol/openid-connect/userinfo';
+      var req = new XMLHttpRequest();
+      req.open('GET', url, true);
+      req.setRequestHeader('Accept', 'application/json');
+      const token = localStorage.getItem('token')
+      req.setRequestHeader('Authorization', 'bearer ' + token);
+
+      var p = {
+      }
+      p.promise = new Promise((resolve, reject) => {
+        p.resolve = resolve
+        p.reject = reject
+      })
+      // console.log(promise)
+
+      req.onreadystatechange = function () {
+          if (req.readyState == 4) {
+              if (req.status == 200) {
+                p.resolve(true)
+              } else {
+                p.reject(false)
+              }
+          }
+      };
+
+      req.send();
+      return p.promise
+    }
+  </script>
+</body>
+</html>

@@ -1,22 +1,48 @@
 version: "3"
 
+#keycloak: https://keycloak.zhongfu.net:9443/
+#ui: https://ui.zhongfu.net:9443/
+
 services:
-  #  mysql:
-  #    restart: always
-  #    image: mysql:latest
-  #    container_name: mysql
-  #    volumes:
-  #      - ./mydir:/mydir
-  #      - ./datadir:/var/lib/mysql
-  #      - ./conf/my.cnf:/etc/my.cnf
-  #      数据库还原目录 可将需要还原的sql文件放在这里
-  #      - /docker/mysql/source:/docker-entrypoint-initdb.d
-  #    environment:
-  #      - "MYSQL_ROOT_PASSWORD=root"
-  #      - "MYSQL_DATABASE=keycloak-db"
-  #      - "TZ=Asia/Shanghai"
-  #    ports:
-  #      - 3306:3306
+  apisix-dashboard:
+    image: apache/apisix-dashboard:2.10.1-alpine
+    restart: always
+    volumes:
+      - ./dashboard_conf/conf.yaml:/usr/local/apisix-dashboard/conf/conf.yaml
+    ports:
+      - "9000:9000"
+    depends_on:
+      - etcd
+      - apisix
+
+  apisix:
+    image: apache/apisix:2.13.1-alpine
+    restart: always
+    volumes:
+#      - ./apisix_log:/usr/local/apisix/logs
+      - ./apisix_conf/config.yaml:/usr/local/apisix/conf/config.yaml:ro
+    depends_on:
+      - etcd
+    ##network_mode: host
+    ports:
+      - "9080:9080/tcp"
+      - "9091:9091/tcp"
+      - "9443:9443/tcp"
+      - "9092:9092/tcp"
+
+  etcd:
+    image: bitnami/etcd:3.4.15
+    restart: always
+    # volumes:
+    # - etcd_data:/bitnami/etcd
+    environment:
+      ETCD_ENABLE_V2: "true"
+      ALLOW_NONE_AUTHENTICATION: "yes"
+      ETCD_ADVERTISE_CLIENT_URLS: "http://0.0.0.0:2379"
+      ETCD_LISTEN_CLIENT_URLS: "http://0.0.0.0:2379"
+    ports:
+      - "2379:2379/tcp"
+
   mariadb:
     image: mariadb:10.5.5
     container_name: "mariadb"
@@ -44,7 +70,16 @@ services:
       KC_DB_URL: "jdbc:mariadb://mariadb:3306/keycloak_db?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&failOverReadOnly=false&allowPublicKeyRetrieval=true"
       KC_DB_USERNAME: root
       KC_DB_PASSWORD: root
+      PROXY_ADDRESS_FORWARDING: "true"
     depends_on:
       - mariadb
     command: 'start-dev'
 #    network_mode: host
+
+  ui:
+    image: ui:latest
+    container_name: ui
+    volumes:
+      - /home/jujucom/Desktop/workspace/projects/k8s-env/keycloak/keycloak-h5:/static
+    ports:
+      - 8088:80

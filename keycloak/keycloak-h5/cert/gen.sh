@@ -28,13 +28,9 @@ openssl req -newkey rsa:2048 \
             -nodes \
             -out server.crt \
             -keyout server.key \
-            -subj "/C=CN/ST=Jiangsu/L=Nanjing/O=Zhongfu/OU=Cloud/CN=cloud.zhongfu.net"
+            -subj "/C=CN/ST=Jiangsu/L=Nanjing/O=Zhongfu/OU=Cloud/CN=*.cloud.zhongfu.net"
 
 # generate corresponding pem files for keycloak
-openssl rsa -in server.key -text > server.key.pem
-openssl x509 -inform PEM -in server.crt > server.crt.pem
-chmod 755 server.key.pem
-
-#crt上有证书持有人的信息，持有人的公钥，以及签署者的签名等信息。当用户安装了证书之后，便意味着信任了这份证书，同时拥有了其中的公钥。
-#证书上会说明用途，例如服务器认证，客户端认证，或者签署其他证书。当系统收到一份新的证书的时候，证书会说明，是由谁签署的。
-#如果这个签署者确实可以签署其他证书，并且收到证书上的签名和签署者的公钥可以对上的时候，系统就自动信任新的证书。
+#openssl rsa -in server.key -text > server.key.pem
+#openssl x509 -inform PEM -in server.crt > server.crt.pem
+#chmod 755 server.key.pem
