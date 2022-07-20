@@ -27,7 +27,7 @@ services:
     ports:
       - "9080:9080/tcp"
       - "9091:9091/tcp"
-      - "9443:9443/tcp"
+      - "443:9443/tcp"
       - "9092:9092/tcp"
 
   etcd:
@@ -70,7 +70,12 @@ services:
       KC_DB_URL: "jdbc:mariadb://mariadb:3306/keycloak_db?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&failOverReadOnly=false&allowPublicKeyRetrieval=true"
       KC_DB_USERNAME: root
       KC_DB_PASSWORD: root
+#      KC_HOSTNAME: "keycloak.cloud.zhongfu.net"
       PROXY_ADDRESS_FORWARDING: "true"
+#      KC_HOSTNAME_ADMIN: "keycloak.cloud.zhongfu.net"
+      KC_HOSTNAME_PORT: "443"
+      KC_HTTP_RELATIVE_PATH: "/iam"
+      KC_PROXY: "edge"
     depends_on:
       - mariadb
     command: 'start-dev'

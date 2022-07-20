@@ -1,5 +1,5 @@
 {
   "realm": "zfinfo",
-  "auth-server-url": "http://keycloak.zhongfu.net:9080/",
+  "auth-server-url": "https://cloud.zhongfu.net/iam/",
   "resource": "security-admin-console"
 }

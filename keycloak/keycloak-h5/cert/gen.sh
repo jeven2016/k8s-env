@@ -24,13 +24,16 @@
 openssl req -newkey rsa:2048 \
             -x509 \
             -sha256 \
-            -days 3650 \
+            -days 36500 \
             -nodes \
             -out server.crt \
             -keyout server.key \
-            -subj "/C=CN/ST=Jiangsu/L=Nanjing/O=Zhongfu/OU=Cloud/CN=*.cloud.zhongfu.net"
+            -subj "/C=CN/ST=Jiangsu/L=Nanjing/O=Zhongfu/OU=Cloud/CN=cloud.zhongfu.net/CN=*.cloud.zhongfu.net/CN=192.168.215.129/"
 
 # generate corresponding pem files for keycloak
 #openssl rsa -in server.key -text > server.key.pem
 #openssl x509 -inform PEM -in server.crt > server.crt.pem
 #chmod 755 server.key.pem
+
+# check the details of cert
+ openssl x509 -in server.crt -noout -text
