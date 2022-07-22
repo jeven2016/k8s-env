@@ -28,7 +28,7 @@ openssl req -newkey rsa:2048 \
             -nodes \
             -out server.crt \
             -keyout server.key \
-            -subj "/C=CN/ST=Jiangsu/L=Nanjing/O=Zhongfu/OU=Cloud/CN=cloud.zhongfu.net/CN=*.cloud.zhongfu.net/CN=192.168.215.129/"
+            -subj "/C=CN/ST=Jiangsu/L=Nanjing/O=Zhongfu/OU=Cloud/CN=cloud.zhongfu.net/CN=*.cloud.zhongfu.net/"
 
 # generate corresponding pem files for keycloak
 #openssl rsa -in server.key -text > server.key.pem
