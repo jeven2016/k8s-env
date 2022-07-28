@@ -1,5 +1,5 @@
 {
   "realm": "zfinfo",
-  "auth-server-url": "https://cloud.zhongfu.net/iam/",
+  "auth-server-url": "https://cloud.zhongfu.net:9443/iam/",
   "resource": "security-admin-console"
 }
