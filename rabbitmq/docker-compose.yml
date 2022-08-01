@@ -1,0 +1,17 @@
+version: "3"
+
+#keycloak: https://keycloak.zhongfu.net:9443/
+#ui: https://ui.zhongfu.net:9443/
+
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: admin
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+      - "5671:5671"
+      - "15671:15671"
